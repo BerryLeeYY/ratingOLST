@@ -1,50 +1,107 @@
-from turtle import width
 import pandas as pd
 from dash import Dash, dcc, html, dash_table
 from dash.dependencies import Input, Output, State
 import numpy as np
 import dash
 import base64
-import datetime
 import io
+from dash.exceptions import PreventUpdate
 
-
-rating_list = [["sub_ID", "first_rate", "second_rate", "it1", "it2", "it3", "it4"]]
+rating_list = [["sub_ID", "first_rate", "second_rate", "rating reason", "it1", "it2", "it3", "it4", "it5", "other comments"]]
 array_rating = np.array(rating_list)
-ini_rate = [[np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]]
+ini_rate = [[np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]]
 ini_df = pd.DataFrame(ini_rate, columns = rating_list[0])
 df = ini_df
-app = Dash(__name__)
-server = app.server
 
-app.layout = html.Div([
-    html.H1("Title"),
-    html.Div([
-        html.Div([""], style = {'width':'10%', 'height':'100%'}),
+labeled_list = [
+                {'label': 'sub_01_EP_W2', 'value': 'sub_01_EP_W2'},
+                {'label': 'sub_01_EC_W2', 'value': 'sub_01_EC_W2'},
+                {'label': 'sub_02_EP_W2', 'value': 'sub_02_EP_W2'},
+                {'label': 'sub_02_EC_W2', 'value': 'sub_02_EC_W2'},
+                {'label': 'sub_03_EP_W2', 'value': 'sub_03_EP_W2'},
+                {'label': 'sub_03_EC_W2', 'value': 'sub_03_EC_W2'},
+                {'label': 'sub_04_EP_W2', 'value': 'sub_04_EP_W2'},
+                {'label': 'sub_04_EC_W2', 'value': 'sub_04_EC_W2'},
+                {'label': 'sub_05_EP_W2', 'value': 'sub_05_EP_W2'},
+                {'label': 'sub_05_EC_W2', 'value': 'sub_05_EC_W2'},
+                {'label': 'sub_06_EP_W2', 'value': 'sub_06_EP_W2'},
+                {'label': 'sub_06_EC_W2', 'value': 'sub_06_EC_W2'},
+                {'label': 'sub_07_EP_W2', 'value': 'sub_07_EP_W2'},
+                {'label': 'sub_07_EC_W2', 'value': 'sub_07_EC_W2'},
+                {'label': 'sub_08_EP_W2', 'value': 'sub_08_EP_W2'},
+                {'label': 'sub_08_EC_W2', 'value': 'sub_08_EC_W2'},
+                {'label': 'sub_09_EP_W2', 'value': 'sub_09_EP_W2'},
+                {'label': 'sub_09_EC_W2', 'value': 'sub_09_EC_W2'},
+                {'label': 'sub_10_EP_W2', 'value': 'sub_10_EP_W2'},
+                {'label': 'sub_10_EC_W2', 'value': 'sub_10_EC_W2'},
+                {'label': 'sub_11_EP_W2', 'value': 'sub_11_EP_W2'},
+                {'label': 'sub_11_EC_W2', 'value': 'sub_11_EC_W2'},
+                {'label': 'sub_12_EP_W2', 'value': 'sub_12_EP_W2'},
+                {'label': 'sub_12_EC_W2', 'value': 'sub_12_EC_W2'},
+                {'label': 'sub_13_EP_W2', 'value': 'sub_13_EP_W2'},
+                {'label': 'sub_13_EC_W2', 'value': 'sub_13_EC_W2'},
+                {'label': 'sub_14_EP_W2', 'value': 'sub_14_EP_W2'},
+                {'label': 'sub_14_EC_W2', 'value': 'sub_14_EC_W2'},
+                {'label': 'sub_15_EP_W2', 'value': 'sub_15_EP_W2'},
+                {'label': 'sub_15_EC_W2', 'value': 'sub_15_EC_W2'},
+                {'label': 'sub_16_EP_W2', 'value': 'sub_16_EP_W2'},
+                {'label': 'sub_16_EC_W2', 'value': 'sub_16_EC_W2'},
+                {'label': 'sub_17_EP_W2', 'value': 'sub_17_EP_W2'},
+                {'label': 'sub_17_EC_W2', 'value': 'sub_17_EC_W2'},
+                {'label': 'sub_18_EP_W2', 'value': 'sub_18_EP_W2'},
+                {'label': 'sub_18_EC_W2', 'value': 'sub_18_EC_W2'},
+                {'label': 'sub_19_EP_W2', 'value': 'sub_19_EP_W2'},
+                {'label': 'sub_19_EC_W2', 'value': 'sub_19_EC_W2'},
+                {'label': 'sub_20_EP_W2', 'value': 'sub_20_EP_W2'},
+                {'label': 'sub_20_EC_W2', 'value': 'sub_20_EC_W2'},
+                {'label': 'sub_21_EP_W2', 'value': 'sub_21_EP_W2'},
+                {'label': 'sub_21_EC_W2', 'value': 'sub_21_EC_W2'},
+                {'label': 'sub_22_EP_W2', 'value': 'sub_22_EP_W2'},
+                {'label': 'sub_22_EC_W2', 'value': 'sub_22_EC_W2'},
+                {'label': 'sub_23_EP_W2', 'value': 'sub_23_EP_W2'},
+                {'label': 'sub_23_EC_W2', 'value': 'sub_23_EC_W2'},
+                {'label': 'sub_24_EP_W2', 'value': 'sub_24_EP_W2'},
+                {'label': 'sub_24_EC_W2', 'value': 'sub_24_EC_W2'},
+                {'label': 'sub_25_EP_W2', 'value': 'sub_25_EP_W2'},
+                {'label': 'sub_25_EC_W2', 'value': 'sub_25_EC_W2'},
+                {'label': 'sub_26_EP_W2', 'value': 'sub_26_EP_W2'},
+                {'label': 'sub_26_EC_W2', 'value': 'sub_26_EC_W2'},
+                {'label': 'sub_27_EP_W2', 'value': 'sub_27_EP_W2'},
+                {'label': 'sub_27_EC_W2', 'value': 'sub_27_EC_W2'},
+                {'label': 'sub_28_EP_W2', 'value': 'sub_28_EP_W2'},
+                {'label': 'sub_28_EC_W2', 'value': 'sub_28_EC_W2'},
+                {'label': 'sub_29_EP_W2', 'value': 'sub_29_EP_W2'},
+                {'label': 'sub_29_EC_W2', 'value': 'sub_29_EC_W2'},
+                {'label': 'sub_30_EP_W2', 'value': 'sub_30_EP_W2'},
+                {'label': 'sub_30_EC_W2', 'value': 'sub_30_EC_W2'},
+                {'label': 'sub_31_EP_W2', 'value': 'sub_31_EP_W2'},
+                {'label': 'sub_31_EC_W2', 'value': 'sub_31_EC_W2'},
+                        ]
+
+main_layout = html.Div([
+        html.Div([dcc.Store(id='loaded-memory'),
+                dcc.Store(id='total-memory')
+        ], style = {'width':'10%', 'height':'100%'}),
         html.Div([
+            html.H1("OLST Assessment Webapp"),
+            #html.Button("clear", id='clear', n_clicks=0),
+            #html.Br(),
+            #html.Br(),
+            #html.Div(id = "clear-return"),
             html.H3("Select Subject:"),
-            dcc.Dropdown(options=[
-                            {'label': 'sub_1', 'value': 'sub_1'},
-                            {'label': 'sub_2', 'value': 'sub_2'},
-                            {'label': 'sub_3', 'value': 'sub_3'},
-                            {'label': 'sub_4', 'value': 'sub_4'},
-                            {'label': 'sub_5', 'value': 'sub_5'},
-                        ], 
-                        value = 'sub_1', 
+            dcc.Dropdown(options=labeled_list,
                         id='sub-dropdown'),
-            html.Br(), 
-            html.Br(), 
-             
+            html.Br(),
+
             html.H3("First rate:"),
-            dcc.Slider(min=0, max=10, 
-            step=0.5, 
-            marks = {0:"Good", 10: "Bad"}, 
-            
+            dcc.Slider(min=0, max=10,
+            step=0.5,
+            marks = {0:"Good", 10: "Bad"},
+
             id='first-rate-slider'),
 
-            html.Br(), 
-            html.Br(), 
-             
+            html.Br(),
+
             html.H3("Second rate:"),
             dcc.RadioItems(
                 options=[
@@ -53,60 +110,81 @@ app.layout = html.Div([
                     {'label':'Bad', 'value':'Bad'}
                     ],
                 inline=True,
-                
+
                 id='second-rate-slider'),
 
-            html.Br(), 
-            html.Br(), 
-             
-            html.H3("Item 1 error count:"),
+            html.Br(),
+
+            html.H3("Rating reason"),
             dcc.Input(
-                    id="Item-1", 
-                    type="number", 
+                    id="rating-reason",
+                    type="text",
+                    placeholder="e.g., body sway too much... ",
+                    style = {"width":"100%"}),
+            html.Br(),
+            html.H3("1.	Lifting forefoot or heel: "),
+            dcc.Input(
+                    id="Item-1",
+                    type="number",
                     placeholder="Item 1 error count",
-                    
+
                     min=0, max=100, step=1,
                 ),
-            html.Br(), 
-            html.Br(), 
-             
-            html.H3("Item 2 error count:"),
+            html.Br(),
+
+            html.H3("2.	Moving hip into more than 30 degrees of flexion or abduction: "),
             dcc.Input(
-                    id="Item-2", 
-                    type="number", 
+                    id="Item-2",
+                    type="number",
                     placeholder="Item 2 error count",
-                    
+
                     min=0, max=100, step=1,
                 ),
-            html.Br(), 
-            html.Br(), 
-             
-            html.H3("Item-3 error count:"),
+            html.Br(),
+
+            html.H3("3.	Stepping, stumbling, or falling: "),
             dcc.Input(
-                    id="Item-3", 
-                    type="number", 
+                    id="Item-3",
+                    type="number",
                     placeholder="Item 3 error count",
-                    
+
                     min=0, max=100, step=1,
                 ),
-            html.Br(), 
-            html.Br(), 
-             
-            html.H3("Item 4 error count:"),
+            html.Br(),
+            html.H3("4.	Lifting hands off iliac crests: "),
             dcc.Input(
-                    id="Item-4", 
-                    type="number", 
+                    id="Item-4",
+                    type="number",
                     placeholder="Item 4 error count",
-                    
+
                     min=0, max=100, step=1,
                 ),
             html.Br(),
+            html.H3("5.	Remaining out of the test position for more than 5s: "),
+            dcc.Input(
+                    id="Item-5",
+                    type="number",
+                    placeholder="Item 5 error count",
+
+                    min=0, max=100, step=1,
+                ),
             html.Br(),
-            
+            html.H3("Other comments"),
+            dcc.Input(
+                    id="other-comments",
+                    type="text",
+                    placeholder="e.g., hard to rate because.... ",
+                    style = {"width":"100%"}),
+            html.Br(),
+            html.Br(),
             html.Button('Submit', id='submit-val', n_clicks=0)
         ], style = {'width':'40%', 'height':'100%'}),
         html.Div([], style = {'width':'1%', 'height':'100%'}),
         html.Div([
+            html.H1("   "),
+            html.Br(),
+            html.Br(),
+            html.Br(),
             dcc.Upload(
                 id='upload-data',
                 children=html.Div([
@@ -126,27 +204,55 @@ app.layout = html.Div([
                 # Allow multiple files to be uploaded
                 multiple=False
                 ),
+            html.H3("Current loaded table (last 5 rows): "),
+            html.Div(id = "download-return"),
+            html.H3("Current working table: "),
             html.Div(
-                [html.Div([dash_table.DataTable(data=ini_df.to_dict('records'), columns=[{"name": i, "id": i} for i in ini_df.columns])], 
+                [html.Div([dash_table.DataTable(data=ini_df.to_dict('records'), columns=[{"name": i, "id": i} for i in ini_df.columns])],
                 id = 'showed-labeled-sub'),
                 ]),
             html.Br(),
-            html.Br(),
-            html.H3("Where you want to store your file?"),
-            dcc.Input(id="save-path", type="text", placeholder="C:/Users.....", style = {"width":"100%"}),
-            html.Br(),
-            html.Br(),
             html.Button("Download CSV", id="btn-csv", n_clicks=0),
+            dcc.Download(id="download-dataframe-csv"),
             html.Br(),
             html.Br(),
             html.Div(id = "save-return")
-                ], 
+                ],
                 style = {'width':'40%', 'height':'100%'}),
 
         html.Div([], style = {'width':'10%', 'height':'100%'})
-    ], style = {'display':'flex'})    
+    ], style = {'display':'flex'})
 
-])
+app = Dash(__name__)
+#server = app.server
+
+
+
+app.layout = html.Div([
+                    html.Button("Start", id = "start"),
+                    html.Div(id = "main-page")
+    ])
+
+
+@app.callback(
+    Output('main-page', 'children'),
+    Input('start', 'n_clicks'),
+)
+
+def start(n_clicks):
+    global array_rating
+    global rating_list
+    global df
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'start' in changed_id:
+        rating_list = [["sub_ID", "first_rate", "second_rate", "rating reason", "it1", "it2", "it3", "it4", "it5", "other comments"]]
+        array_rating = np.array(rating_list)
+        ini_rate = [[np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]]
+        ini_df = pd.DataFrame(ini_rate, columns = rating_list[0])
+        df = ini_df
+        return main_layout
+    else:
+        return [" "]
 
 def parse_contents(contents, filename, date):
     content_type, content_string = contents.split(',')
@@ -169,85 +275,105 @@ def parse_contents(contents, filename, date):
     return df
 
 @app.callback(
+            Output('loaded-memory', 'data'),
+            Output('download-return', 'children'),
+            Input('upload-data', 'contents'),
+            State('upload-data', 'filename'),
+            State('upload-data', 'last_modified')
+            )
+
+def on_click(list_of_contents, list_of_names, list_of_dates):
+    global ini_df
+    if list_of_contents is None:
+        # prevent the None callbacks is important with the store component.
+        # you don't want to update the store for nothing.
+        raise PreventUpdate
+
+    df = parse_contents(list_of_contents, list_of_names, list_of_dates)
+    array_rating = df.values
+    rating_list = array_rating.tolist()
+    if df.shape[0] > 5:
+        showed_df = df.iloc[-5:]
+        return [rating_list, html.Div([
+            dash_table.DataTable(data=showed_df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])]
+    else:
+        showed_df = df
+        return [rating_list, html.Div([
+            dash_table.DataTable(data=showed_df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])]
+
+
+@app.callback(
+    Output('total-memory', 'data'),
     Output('showed-labeled-sub', 'children'),
+    Input('loaded-memory', 'modified_timestamp'),
     Input('submit-val', 'n_clicks'),
-    Input('upload-data', 'contents'),
-    State('upload-data', 'filename'),
-    State('upload-data', 'last_modified'),
+    State('total-memory', 'data'),
+    State('loaded-memory', 'data'),
     State('sub-dropdown', 'value'),
     State('first-rate-slider', 'value'),
     State('second-rate-slider', 'value'),
+    State('rating-reason', 'value'),
     State('Item-1', 'value'),
     State('Item-2', 'value'),
     State('Item-3', 'value'),
     State('Item-4', 'value'),
-
-
+    State('Item-5', 'value'),
+    State('other-comments', 'value')
 )
-#sub_ID, first_rate, second_rate, it1, it2, it3, it4
 
-def update_output(n_clicks, list_of_contents, list_of_names, list_of_dates, sub_ID, first_rate, second_rate, it1, it2, it3, it4):
-    global array_rating
-    global rating_list
-    global df
-    if list_of_contents is not None and n_clicks != 0:
+def update_output(loaded_ts, n_clicks, total_memory, loaded_memory, sub_ID, first_rate, second_rate, rating_reason, it1, it2, it3, it4, it5, other_comments):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    
+    if n_clicks is None and loaded_ts is None:
+        raise PreventUpdate
+    if total_memory is None:
+        total_memory = ini_rate
+        df= pd.DataFrame(total_memory, columns = ["sub_ID", "first_rate", "second_rate", "rating reason", "it1", "it2", "it3", "it4", "it5", "other comments"])
+        return [total_memory, html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])]
+    else:
+        total_memory = total_memory
+    if loaded_ts is not None and "submit-val" not in changed_id:
+        total_memory = loaded_memory
+        curr_content = list(np.array(total_memory)[:,:])
+        df= pd.DataFrame(curr_content, columns = ["sub_ID", "first_rate", "second_rate", "rating reason", "it1", "it2", "it3", "it4", "it5", "other comments"])
+        return [curr_content, html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])]
+        
+    elif "submit-val" in changed_id:
+        total_memory = total_memory
+        if sub_ID not in np.array(total_memory)[:,0] and sub_ID != "sub_ID":
+            total_memory.append([sub_ID, first_rate, second_rate, rating_reason, it1, it2, it3, it4, it5, other_comments])
+            curr_content = list(np.array(total_memory)[:,:])
+            df= pd.DataFrame(curr_content, columns = ["sub_ID", "first_rate", "second_rate", "rating reason", "it1", "it2", "it3", "it4", "it5", "other comments"])
+            return [total_memory, html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])]
+        elif sub_ID in np.array(total_memory)[:,0] and sub_ID != "sub_ID":
+            curr_array = np.array(total_memory)
+            overlap_index = (np.where(np.array(total_memory)[:,0] == sub_ID))[0][0]
+            curr_array[overlap_index,:] = [sub_ID, first_rate, second_rate, rating_reason, it1, it2, it3, it4, it5, other_comments]
+            array_rating = curr_array
+            total_memory = list(array_rating)
+            curr_content = list(np.array(total_memory)[:,:])
+            df= pd.DataFrame(curr_content, columns = ["sub_ID", "first_rate", "second_rate", "rating reason", "it1", "it2", "it3", "it4", "it5", "other comments"])
+            return [total_memory, html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])]
 
-        if sub_ID not in array_rating[:,0] and sub_ID != "sub_ID":
-            rating_list.append([sub_ID, first_rate, second_rate, it1, it2, it3, it4])
-            array_rating = np.array(rating_list)
-            df = pd.DataFrame(array_rating[1:,:], columns = rating_list[0])
-            return html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])
-        else:
-            overlap_index = (np.where(array_rating[:,0] == sub_ID))[0][0]
-            array_rating[overlap_index,:] = [sub_ID, first_rate, second_rate, it1, it2, it3, it4]
-            array_rating = array_rating
-            rating_list = list(array_rating)
-            df = pd.DataFrame(array_rating[1:,:], columns = rating_list[0])
-            return html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])
-    elif list_of_contents is not None and n_clicks == 0:
-        rating_list = [["sub_ID", "first_rate", "second_rate", "it1", "it2", "it3", "it4"]]
-        df = parse_contents(list_of_contents, list_of_names, list_of_dates)
-        array_rating = df.values
-        information = array_rating.tolist()
-        for info in information:
-            rating_list.append(info)
-        return html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])
-    elif list_of_contents is  None and n_clicks == 0:
-        df = ini_df
-        return html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])
-    elif list_of_contents is  None and n_clicks != 0:
-        
-        if sub_ID not in array_rating[:,0]:
-            rating_list.append([sub_ID, first_rate, second_rate, it1, it2, it3, it4])
-            array_rating = np.array(rating_list)
-            df = pd.DataFrame(array_rating[1:,:], columns = array_rating[0,:])
-            return html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])
-        elif sub_ID in array_rating[:,0]:
-            overlap_index = (np.where(array_rating[:,0] == sub_ID))[0][0]
-            array_rating[overlap_index,:] = [sub_ID, first_rate, second_rate, it1, it2, it3, it4]
-            array_rating = array_rating
-            rating_list = list(array_rating)
-            df = pd.DataFrame(array_rating[1:,:], columns = array_rating[0,:])
-            return html.Div([dash_table.DataTable(data=df.to_dict('records'), columns=[{"name": i, "id": i} for i in df.columns])])
-        
-        
 @app.callback(
-    Output("save-return", "children"),
+    Output("download-dataframe-csv", "data"),
     Input("btn-csv", "n_clicks"),
-    State("save-path", "value")
+    Input('total-memory', 'modified_timestamp'),
+    State('total-memory', 'data'),
 )
 
-def func(n_clicks, path):
-    global df
-    global text_return
-    df = df
-    text_return = "ready to download"
-    if n_clicks != 0:
-        try:
-            df.to_csv(path + "/OLST_assessment.csv", index = 0)
-            text_return = "OLST_assessment.csv is successfully downloaded in " + path + ". Click times: " + str(n_clicks)
-        except:
-            text_return = "Failed to download"
-    return [text_return]
+def func(download_n_clicks, total_ts, total_memory):
+    if total_ts is None:
+        raise PreventUpdate
+    total_memory = total_memory
+    curr_content = total_memory
+    download_csv = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'btn-csv' in download_csv:
+        df = df= pd.DataFrame(curr_content, columns = ["sub_ID", "first_rate", "second_rate", "rating reason", "it1", "it2", "it3", "it4", "it5", "other comments"])
+        save_df = df.copy()
+        save_df.index = save_df.sub_ID
+        save_df = save_df.drop(['sub_ID'], axis = 1)
+        return dcc.send_data_frame(save_df.to_csv, "OLST_assessment.csv")
+
 if __name__ == '__main__':
     app.run_server(debug=True)
